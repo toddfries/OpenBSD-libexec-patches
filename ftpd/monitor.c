@@ -1,4 +1,4 @@
-/*	$OpenBSD: monitor.c,v 1.18 2008/06/30 12:03:51 ragge Exp $	*/
+/*	$OpenBSD: monitor.c,v 1.20 2009/06/04 01:12:39 sthen Exp $	*/
 
 /*
  * Copyright (c) 2004 Moritz Jodeit <moritz@openbsd.org>
@@ -254,7 +254,7 @@ handle_cmds(void)
 	int err, s, slavequit, serrno, domain;
 	pid_t preauth_slave_pid;
 	size_t len;
-	struct sockaddr sa;
+	union sockunion sa;
 	socklen_t salen;
 	char *name, *pw;
 
@@ -364,13 +364,14 @@ handle_cmds(void)
 			bzero(&sa, sizeof(sa));
 			recv_data(fd_slave, &sa, salen);
 
-			if (sa.sa_len != salen)
+			if (sa.su_si.si_len != salen)
 				fatalx("monitor received invalid sockaddr len");
 
-			if (sa.sa_family != AF_INET && sa.sa_family != AF_INET6)
+			if (sa.su_si.si_family != AF_INET &&
+			    sa.su_si.si_family != AF_INET6)
 				fatalx("monitor received invalid addr family");
 
-			err = bind(s, &sa, salen);
+			err = bind(s, (struct sockaddr *)&sa, salen);
 			serrno = errno;
 
 			if (s >= 0)
