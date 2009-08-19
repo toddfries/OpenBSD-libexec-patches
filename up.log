@@ -2,3 +2,4 @@
 ? .gitignore
 ? status.log
 ? up.log
+P ld.so/dl_printf.c
