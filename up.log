@@ -4,4 +4,4 @@
 ? up.log
 ? spamd/obj
 P spamd/spamd.8
-P spamd-setup/spamd-setup.c
+P spamlogd/spamlogd.8
