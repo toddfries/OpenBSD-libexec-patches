@@ -3,8 +3,6 @@
 #   (use "git add <file>..." to update what will be committed)
 #   (use "git checkout -- <file>..." to discard changes in working directory)
 #
-#	modified:   spamd/spamd.8
-#	modified:   spamlogd/spamlogd.8
 #	modified:   status.log
 #	modified:   up.log
 #
