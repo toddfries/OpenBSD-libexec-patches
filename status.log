@@ -3,44 +3,7 @@
 #   (use "git add <file>..." to update what will be committed)
 #   (use "git checkout -- <file>..." to discard changes in working directory)
 #
-#	modified:   comsat/comsat.c
-#	modified:   fingerd/fingerd.c
-#	modified:   ftpd/ftpcmd.y
-#	modified:   ftpd/ftpd.c
-#	modified:   ftpd/logwtmp.c
-#	modified:   ftpd/popen.c
-#	modified:   getNAME/getNAME.c
-#	modified:   getty/init.c
-#	modified:   getty/main.c
-#	modified:   getty/subr.c
-#	modified:   ld.so/dir.c
-#	modified:   lockspool/lockspool.c
-#	modified:   mail.local/locking.c
-#	modified:   mail.local/mail.local.c
-#	modified:   rpc.rstatd/rstat_proc.c
-#	modified:   rpc.rstatd/rstatd.c
-#	modified:   rpc.rusersd/rusers_proc.c
-#	modified:   rpc.rusersd/rusersd.c
-#	modified:   rpc.rwalld/rwalld.c
-#	modified:   rpc.sprayd/sprayd.c
-#	modified:   rpc.yppasswdd/rpc.yppasswdd.c
-#	modified:   rpc.yppasswdd/yppasswdd_mkpw.c
-#	modified:   rpc.yppasswdd/yppasswdd_proc.c
-#	modified:   rshd/rshd.c
 #	modified:   status.log
-#	modified:   talkd/announce.c
-#	modified:   talkd/print.c
-#	modified:   talkd/process.c
-#	modified:   talkd/table.c
-#	modified:   talkd/talkd.c
-#	modified:   tcpd/safe_finger/safe_finger.c
-#	modified:   tcpd/tcpd/tcpd.c
-#	modified:   tcpd/tcpdchk/inetcf.c
-#	modified:   tcpd/tcpdchk/scaffold.c
-#	modified:   tcpd/tcpdchk/tcpdchk.c
-#	modified:   tcpd/tcpdmatch/tcpdmatch.c
-#	modified:   tftpd/tftpd.c
 #	modified:   up.log
-#	modified:   uucpd/uucpd.c
 #
 no changes added to commit (use "git add" and/or "git commit -a")
