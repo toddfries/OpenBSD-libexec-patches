@@ -3,4 +3,3 @@
 ? status.log
 ? up.log
 ? spamd/obj
-P spamd/grey.c
