@@ -1,4 +1,4 @@
-/*	$OpenBSD: rtld_machine.c,v 1.17 2010/01/03 22:18:04 kettenis Exp $	*/
+/*	$OpenBSD: rtld_machine.c,v 1.19 2010/05/02 12:03:24 kettenis Exp $	*/
 
 /*
  * Copyright (c) 2004 Michael Shalayeff
@@ -418,7 +418,7 @@ _dl_bind(elf_object_t *object, int reloff)
 	const char *symn;
 	Elf_Addr value;
 	Elf_RelA *rela;
-	sigset_t omask, nmask;
+	sigset_t savedmask;
 
 	rela = (Elf_RelA *)object->dyn.jmprel + reloff;
 
@@ -440,9 +440,7 @@ _dl_bind(elf_object_t *object, int reloff)
 
 	/* if PLT+GOT is protected, allow the write */
 	if (object->got_size != 0) {
-		sigfillset(&nmask);
-		_dl_sigprocmask(SIG_BLOCK, &nmask, &omask);
-		_dl_thread_bind_lock(0);
+		_dl_thread_bind_lock(0, &savedmask);
 		/* mprotect the actual modified region, not the whole plt */
 		_dl_mprotect((void*)addr, sizeof (Elf_Addr) * 2,
 		    PROT_READ|PROT_WRITE);
@@ -456,8 +454,7 @@ _dl_bind(elf_object_t *object, int reloff)
 		/* mprotect the actual modified region, not the whole plt */
 		_dl_mprotect((void*)addr, sizeof (Elf_Addr) * 3,
 		    PROT_READ|PROT_EXEC);
-		_dl_thread_bind_lock(1);
-		_dl_sigprocmask(SIG_SETMASK, &omask, NULL);
+		_dl_thread_bind_lock(1, &savedmask);
 	}
 
 	return ((Elf_Addr)addr);
