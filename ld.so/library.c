@@ -1,4 +1,4 @@
-/*	$OpenBSD: library.c,v 1.60 2010/11/16 18:59:00 drahn Exp $ */
+/*	$OpenBSD: library.c,v 1.62 2011/05/10 04:50:35 otto Exp $ */
 
 /*
  * Copyright (c) 2002 Dale Rahn

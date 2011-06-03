@@ -1,4 +1,4 @@
-/*	$OpenBSD: loader.c,v 1.122 2011/04/06 11:36:25 miod Exp $ */
+/*	$OpenBSD: loader.c,v 1.124 2011/05/22 22:43:47 drahn Exp $ */
 
 /*
  * Copyright (c) 1998 Per Fogelstrom, Opsycon AB
@@ -87,12 +87,6 @@ _dl_set_sod(const char *path, struct sod *sod)
 		_dl_build_sod(++fname, sod);
 	else
 		_dl_build_sod(path, sod);
-}
-
-void
-_dl_debug_state(void)
-{
-	/* Debugger stub */
 }
 
 /*
@@ -429,6 +423,7 @@ _dl_boot(const char **argv, char **envp, const long dyn_loff, long *dl_data)
 
 	/* init this in runtime, not statically */
 	TAILQ_INIT(&_dlopened_child_list);
+	TAILQ_INIT(&_dlsym_search_list);
 
 	exe_obj = NULL;
 	_dl_loading_object = NULL;
@@ -516,6 +511,7 @@ _dl_boot(const char **argv, char **envp, const long dyn_loff, long *dl_data)
 	dyn_obj->status |= STAT_RELOC_DONE;
 	_dl_set_sod(dyn_obj->load_name, &dyn_obj->sod);
 
+	_dl_search_list_valid = 0;
 	/*
 	 * Everything should be in place now for doing the relocation
 	 * and binding. Call _dl_rtld to do the job. Fingers crossed.
