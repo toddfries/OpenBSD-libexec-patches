@@ -1,4 +1,4 @@
-/*	$OpenBSD: library.c,v 1.64 2012/01/09 17:01:22 ariane Exp $ */
+/*	$OpenBSD: library.c,v 1.66 2012/06/12 20:32:17 matthew Exp $ */
 
 /*
  * Copyright (c) 2002 Dale Rahn
@@ -146,6 +146,12 @@ _dl_tryload_shlib(const char *libname, int type, int flags)
 		case PT_DYNAMIC:
 			dynp = (Elf_Dyn *)phdp->p_vaddr;
 			break;
+		case PT_TLS:
+			_dl_printf("%s: unsupported TLS program header in %s\n",
+			    _dl_progname, libname);
+			_dl_close(libfile);
+			_dl_errno = DL_CANT_LOAD_OBJ;
+			return(0);
 		default:
 			break;
 		}
@@ -246,9 +252,8 @@ _dl_tryload_shlib(const char *libname, int type, int flags)
 		object->dev = sb.st_dev;
 		object->inode = sb.st_ino;
 		object->obj_flags |= flags;
-		_dl_build_sod(object->load_name, &object->sod);
+		_dl_set_sod(object->load_name, &object->sod);
 	} else {
-		/* XXX not possible. object cannot come back NULL */
 		_dl_munmap((void *)libaddr, maxva - minva);
 		_dl_load_list_free(load_list);
 	}
