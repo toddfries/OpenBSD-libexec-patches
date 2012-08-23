@@ -1,4 +1,4 @@
-/*	$OpenBSD: util.c,v 1.21 2010/10/30 15:36:32 deraadt Exp $	*/
+/*	$OpenBSD: util.c,v 1.23 2012/08/22 17:06:39 matthew Exp $	*/
 
 /*
  * Copyright (c) 1998 Per Fogelstrom, Opsycon AB
@@ -38,7 +38,7 @@
  * Ideally, a scheme to compile these stubs from libc should be used, but
  * this would end up dragging too much code from libc here.
  */
-long __guard[8] = {0, 0, 0, 0, 0, 0, 0, 0};
+long __guard[8] __attribute__((section(".openbsd.randomdata")));
 
 void __stack_smash_handler(char [], int);
 
@@ -128,19 +128,17 @@ _dl_free(void *p)
 }
 
 
+void
+_dl_randombuf(void *buf, size_t buflen)
+{
+	int mib[2] = { CTL_KERN, KERN_ARND };
+	_dl_sysctl(mib, 2, buf, &buflen, NULL, 0);
+}
+
 unsigned int
 _dl_random(void)
 {
-	int mib[2];
 	unsigned int rnd;
-	size_t len;
-
-	mib[0] = CTL_KERN;
-	mib[1] = KERN_ARND;
-	len = sizeof(rnd);
-	_dl_sysctl(mib, 2, &rnd, &len, NULL, 0);
-
+	_dl_randombuf(&rnd, sizeof(rnd));
 	return (rnd);
 }
-
-
