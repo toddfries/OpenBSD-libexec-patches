@@ -1,4 +1,4 @@
-/*	$OpenBSD: ldasm.S,v 1.8 2011/07/23 21:41:19 kettenis Exp $	*/
+/*	$OpenBSD: ldasm.S,v 1.10 2012/10/24 03:26:56 guenther Exp $	*/
 
 /*
  * Copyright (c) 2002,2004 Dale Rahn
@@ -64,8 +64,8 @@ _dl_start:
 	addq	$DL_DATA_SIZE,%rsp	# return dl_data
 
 #	popq	%rbx			# %rbx = ps_strings - XXXDSR
-#	popq	%rdx			# %rdx = cleanup - XXXDSR
 #	popq	%rcx			# %rcx = obj_main - XXXDSR
+	movq	$0, %rdx		# %rdx = cleanup - XXXDSR
 	movq	%r12, %rsp
 	jmp	*%rax
 
@@ -86,7 +86,6 @@ __CONCAT(_dl_,n):				;\
 DL_SYSCALL(open)
 DL_SYSCALL(fcntl)
 DL_SYSCALL(fstat)
-DL_SYSCALL(stat)
 DL_SYSCALL(read)
 DL_SYSCALL(write)
 DL_SYSCALL(close)
