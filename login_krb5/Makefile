@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.17 2010/10/13 08:14:22 jsg Exp $
+#	$OpenBSD: Makefile,v 1.19 2013/06/19 19:45:03 robert Exp $
 
 .include <bsd.own.mk>
 
@@ -12,6 +12,7 @@ CFLAGS+=-Wall -I${.CURDIR}/../login_passwd
 SRCS+=	login_krb5.c
 DPADD+=	${LIBKRB5} ${LIBASN1} ${LIBCRYPTO}
 LDADD+=	-lkrb5 -lasn1 -lcrypto
+LDADD+= -lwind -lroken -lcom_err -lheimbase
 CFLAGS+=-DKRB5
 .endif
 

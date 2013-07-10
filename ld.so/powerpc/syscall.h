@@ -1,4 +1,4 @@
-/*	$OpenBSD: syscall.h,v 1.25 2013/04/05 12:58:03 kurt Exp $ */
+/*	$OpenBSD: syscall.h,v 1.27 2013/06/09 13:10:19 miod Exp $ */
 
 /*
  * Copyright (c) 1998 Per Fogelstrom, Opsycon AB
@@ -310,8 +310,8 @@ _dl_sigprocmask(int how, const sigset_t *set, sigset_t *oset)
 }
 
 static inline int
-_dl_sysctl(int *name, u_int namelen, void *oldp, size_t *oldplen, void *newp,
-    size_t newlen)
+_dl_sysctl(const int *name, u_int namelen, void *oldp, size_t *oldplen,
+    void *newp, size_t newlen)
 {
 	register int status;
 
@@ -413,6 +413,27 @@ _dl_getcwd(char *buf, size_t size)
 	    : "=r" (status)
 	    : "I" (SYS___getcwd), "r" (buf), "r" (size)
 	    : "0", "3", "4");
+	return status;
+}
+
+static inline int
+_dl_utrace(const char *label, const void *addr, size_t len)
+{
+	register int status;
+
+	__asm__ volatile ("li    0,%1\n\t"
+	    "mr    3,%2\n\t"
+	    "mr    4,%3\n\t"
+	    "mr    5,%4\n\t"
+	    "sc\n\t"
+	    "cmpwi   0, 0\n\t"
+	    "beq   1f\n\t"
+	    "li    3,-1\n\t"
+	    "1:"
+	    "mr   %0,3\n\t"
+	    : "=r" (status)
+	    : "I" (SYS_utrace), "r" (label), "r" (addr), "r" (len)
+	    : "memory", "0", "3", "4", "5");
 	return status;
 }
 
