@@ -1,6 +1,6 @@
 #!/usr/bin/perl -T
 
-# $OpenBSD: security,v 1.23 2013/03/21 09:37:37 sthen Exp $
+# $OpenBSD: security,v 1.27 2014/04/29 21:30:20 dcoppa Exp $
 #
 # Copyright (c) 2011, 2012 Ingo Schwarze <schwarze@openbsd.org>
 # Copyright (c) 2011 Andrew Fresh <andrew@afresh1.com>
@@ -103,7 +103,7 @@ sub check_passwd {
 			    "\t by root; cannot check for existence " .
 			    "of alternate access files."
 			or check_access_file "$home/.$_", $name
-			    foreach qw(ssh rhosts shosts klogin);
+			    foreach qw(ssh rhosts shosts);
 		}
 		nag $uid == 0 && $name ne 'root',
 		    "Login $name has a user ID of 0.";
@@ -287,20 +287,6 @@ sub check_ksh {
 	}
 }
 
-# Root and uucp should both be in /etc/ftpusers.
-sub check_ftpusers {
-	my $filename = '/etc/ftpusers';
-	nag !(open my $fh, '<', $filename), "open: $filename: $!" and return;
-	my %banned = qw(root 1 uucp 1);
-	while (<$fh>) {
-		chomp;
-		delete $banned{$_};
-	}
-	nag 1, "\u$_ not listed in $filename file."
-	    foreach sort keys %banned;
-	close $fh;
-}
-
 # Uudecode should not be in the /etc/mail/aliases file.
 sub check_mail_aliases {
 	my $filename = '/etc/mail/aliases';
@@ -322,19 +308,15 @@ sub check_hostname_if {
 	}
 }
 
-# Files that should not have + signs.
-sub check_hosts_equiv {
-	foreach my $base (qw(hosts.equiv shosts.equiv hosts.lpd)) {
-		my $filename = "/etc/$base";
-		next unless -s $filename;
-		nag !(open my $fh, '<', $filename),
-		    "open: $filename: $!"
-		    and next;
-		nag /^\+/ && !/^\+@/,
-		    "Plus sign in $filename file."
-		    while <$fh>;
-		close $fh;
-	}
+# hosts.lpd should not have + signs.
+sub check_hosts_lpd {
+	my $filename = '/etc/hosts.lpd';
+	-s $filename or return;
+	nag !(open my $fh, '<', $filename), "open: $filename: $!" and return;
+	nag /^\+/ && !/^\+@/,
+	    "Plus sign in $filename file."
+	    while <$fh>;
+	close $fh;
 }
 
 sub find_homes {
@@ -401,7 +383,7 @@ sub check_dot_readable {
 	foreach my $f (qw(
 	    .netrc .rhosts .gnupg/secring.gpg .gnupg/random_seed
 	    .pgp/secring.pgp .shosts .ssh/identity .ssh/id_dsa .ssh/id_ecdsa
-	    .ssh/id_rsa 
+	    .ssh/id_rsa .ssh/id_ed25519
 	)) {
 		next unless -e "$home/$f";
 		my ($mode, $fuid) = (stat(_))[2,4];
@@ -425,7 +407,7 @@ sub check_dot_writeable {
 	return if $name =~ /^[+-]/;  # skip YP lines
 	foreach my $f (qw(
 	    .bashrc .bash_profile .bash_login .bash_logout .cshrc
-	    .emacs .exrc .forward .fvwmrc .inputrc .klogin .kshrc .login
+	    .emacs .exrc .forward .fvwmrc .inputrc .kshrc .login
 	    .logout .nexrc .profile .screenrc .ssh .ssh/config
 	    .ssh/authorized_keys .ssh/authorized_keys2 .ssh/environment
 	    .ssh/known_hosts .ssh/rc .tcshrc .twmrc .xsession .xinitrc
@@ -899,10 +881,9 @@ check_ksh(check_sh);
 open STDERR, '>&', $olderr;
 
 $check_title = "Checking configuration files:";
-check_ftpusers;
 check_mail_aliases;
 check_hostname_if;
-check_hosts_equiv;
+check_hosts_lpd;
 $check_title = "Checking for special users with .rhosts/.shosts files.";
 my $homes = find_homes;
 check_rhosts_owner @$_ foreach @$homes;

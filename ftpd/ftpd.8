@@ -1,4 +1,4 @@
-.\"	$OpenBSD: ftpd.8,v 1.70 2012/09/27 12:18:20 jmc Exp $
+.\"	$OpenBSD: ftpd.8,v 1.72 2014/03/17 22:13:46 jmc Exp $
 .\"	$NetBSD: ftpd.8,v 1.8 1996/01/14 20:55:23 thorpej Exp $
 .\"
 .\" Copyright (c) 1985, 1988, 1991, 1993
@@ -30,7 +30,7 @@
 .\"
 .\"     @(#)ftpd.8	8.2 (Berkeley) 4/19/94
 .\"
-.Dd $Mdocdate: September 27 2012 $
+.Dd $Mdocdate: March 17 2014 $
 .Dt FTPD 8
 .Os
 .Sh NAME
@@ -39,6 +39,7 @@
 .Sh SYNOPSIS
 .Nm ftpd
 .Op Fl 46ADdlMnPSUW
+.Op Fl m Ar minuid
 .Op Fl T Ar maxtimeout
 .Op Fl t Ar timeout
 .Op Fl u Ar mask
@@ -106,6 +107,12 @@ for anonymous transfers, a directory matching the fully qualified name of
 the IP number the client connected to, and located inside
 .Pa ~ftp ,
 is used instead.
+.It Fl m Ar minuid
+Disallow login to user accounts with a UID below
+.Ar minuid .
+The default is 1000, to prevent access to administrative and daemon accounts.
+Anonymous access is allowed even if the UID of the FTP user is smaller than
+.Ar minuid .
 .It Fl n
 Do not permit anonymous FTP logins.
 Normally they are permitted.
@@ -295,7 +302,7 @@ entry in
 .Pa /etc/login.conf .
 .Pp
 .Nm
-authenticates users according to five rules.
+authenticates users according to the following rules.
 .Bl -enum -offset indent
 .It
 The login name must be in the password database and not have a null password.
@@ -304,6 +311,9 @@ file operations may be performed.
 .It
 The login name must not appear in the file
 .Pa /etc/ftpusers .
+.It
+The user account must have a UID not less than
+.Ar minuid .
 .It
 The user must have a standard shell as described by
 .Xr shells 5 .
