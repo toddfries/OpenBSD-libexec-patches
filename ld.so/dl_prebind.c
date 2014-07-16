@@ -1,4 +1,4 @@
-/* $OpenBSD: dl_prebind.c,v 1.13 2013/11/13 05:41:41 deraadt Exp $ */
+/* $OpenBSD: dl_prebind.c,v 1.16 2014/07/10 09:03:01 otto Exp $ */
 /*
  * Copyright (c) 2006 Dale Rahn <drahn@dalerahn.com>
  *
@@ -21,7 +21,6 @@
 #include <sys/param.h>
 #include <sys/sysctl.h>
 #include <nlist.h>
-#include <string.h>
 #include <link.h>
 #include <dlfcn.h>
 #include <unistd.h>
@@ -200,7 +199,10 @@ prebind_symcache(elf_object_t *object, int plt)
 		if (i <= NUM_STATIC_OBJS) {
 			objarray = &objarray_static[0];
 		} else {
-			objarray = _dl_malloc(sizeof(elf_object_t *) * i);
+			objarray = _dl_reallocarray(NULL, i,
+			    sizeof(elf_object_t *));
+			if (objarray == NULL)
+				_dl_exit(20);
 		}
 
 		obj = _dl_objects;

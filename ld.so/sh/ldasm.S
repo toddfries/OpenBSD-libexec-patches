@@ -1,4 +1,4 @@
-/*	$OpenBSD: ldasm.S,v 1.13 2013/12/25 15:14:59 miod Exp $ */
+/*	$OpenBSD: ldasm.S,v 1.17 2014/07/14 03:54:51 deraadt Exp $ */
 
 /*
  * Copyright (c) 2006 Dale Rahn
@@ -197,17 +197,18 @@ DL_SYSCALL(open)
 DL_SYSCALL(read)
 
 .L_cerr:
-	mov	#-1, r0 
+	neg	r0, r0
 	rts
 	 nop
 
 DL_SYSCALL(write)
 DL_SYSCALL(fstat)
-DL_SYSCALL(fcntl)
 DL_SYSCALL(gettimeofday)
 DL_SYSCALL(readlink)
 DL_SYSCALL(lstat)
 DL_SYSCALL(utrace)
+DL_SYSCALL(getentropy)
+DL_SYSCALL(sendsyslog)
 DL_SYSCALL2(getcwd,__getcwd)
 DL_SYSCALL2(sysctl,__sysctl)
 
@@ -239,5 +240,3 @@ out:
 	.align	2
 LSYS_sigprocmask:
 	.long	SYS_sigprocmask
-
-

@@ -1,4 +1,4 @@
-/*	$OpenBSD: ldasm.S,v 1.8 2013/12/25 13:06:02 miod Exp $	*/
+/*	$OpenBSD: ldasm.S,v 1.13 2014/07/14 03:54:51 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2013 Miodrag Vallat.
@@ -194,9 +194,6 @@ DL_SYSCALL(write)
 DL_SYSCALL(fstat)
 	jmp	%r1
 
-DL_SYSCALL(fcntl)
-	jmp	%r1
-
 DL_SYSCALL(gettimeofday)
 	jmp	%r1
 
@@ -207,6 +204,12 @@ DL_SYSCALL(lstat)
 	jmp	%r1
 
 DL_SYSCALL(utrace)
+	jmp	%r1
+
+DL_SYSCALL(getentropy)
+	jmp	%r1
+
+DL_SYSCALL(sendsyslog)
 	jmp	%r1
 
 DL_SYSCALL2(getcwd,__getcwd)
@@ -237,7 +240,7 @@ END(_dl_sigprocmask)
 
 _dl_cerror:
 	jmp.n	%r1
-	 subu	%r2, %r0, 1
+	 subu	%r2, %r0, %r2
 
 ENTRY(_dl_cacheflush)
 	tb0	0, %r0, 451

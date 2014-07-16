@@ -1,4 +1,4 @@
-/*	$OpenBSD: ldasm.S,v 1.22 2013/12/25 11:10:02 kettenis Exp $	*/
+/*	$OpenBSD: ldasm.S,v 1.25 2014/07/14 03:54:51 deraadt Exp $	*/
 
 /*
  * Copyright (c) 2001 Jason L. Wright (jason@thought.net)
@@ -260,18 +260,6 @@ _dl_fstat:
 
 	.section ".text"
 	.align 4
-	.globl _dl_fcntl
-	.type _dl_fcntl,@function
-_dl_fcntl:
-	mov  SYS_fcntl | SYSCALL_G2RFLAG, %g1	! call sys_fcntl
-	add %o7, 8, %g2				! just return on success
-	t ST_SYSCALL				! off to wonderland
-	retl
-	 sub %g0, %o0, %o0			! error: result = -errno
-
-
-	.section ".text"
-	.align 4
 	.globl _dl_getdents
 	.type _dl_getdents,@function
 _dl_getdents:
@@ -366,6 +354,29 @@ _dl_getcwd:
 	.type _dl_utrace,@function
 _dl_utrace:
 	mov SYS_utrace | SYSCALL_G2RFLAG, %g1	! calling sys_utrace
+	add %o7, 8, %g2				! just return on success
+	t ST_SYSCALL				! off to wonderland
+	retl
+	 sub %g0, %o0, %o0			! error: result = -errno
+
+
+	.section ".text"
+	.align 4
+	.global _dl_getentropy
+	.type _dl_getentropy,@function
+_dl_getentropy:
+	mov SYS_getentropy | SYSCALL_G2RFLAG, %g1	! calling sys_getentropy
+	add %o7, 8, %g2				! just return on success
+	t ST_SYSCALL				! off to wonderland
+	retl
+	 sub %g0, %o0, %o0			! error: result = -errno
+
+	.section ".text"
+	.align 4
+	.global _dl_sendsyslog
+	.type _dl_sendsyslog,@function
+_dl_sendsyslog:
+	mov SYS_sendsyslog | SYSCALL_G2RFLAG, %g1	! calling sys_sendsyslog
 	add %o7, 8, %g2				! just return on success
 	t ST_SYSCALL				! off to wonderland
 	retl

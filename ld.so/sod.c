@@ -1,4 +1,4 @@
-/*	$OpenBSD: sod.c,v 1.27 2013/12/03 01:47:05 deraadt Exp $	*/
+/*	$OpenBSD: sod.c,v 1.31 2014/07/10 09:03:01 otto Exp $	*/
 
 /*
  * Copyright (c) 1993 Paul Kranenburg
@@ -65,6 +65,8 @@ _dl_build_sod(const char *name, struct sod *sodp)
 
 	/* default is an absolute or relative path */
 	sodp->sod_name = (long)_dl_strdup(name);    /* strtok is destructive */
+	if (sodp->sod_name == 0)
+		_dl_exit(7);
 	sodp->sod_library = 0;
 	sodp->sod_major = sodp->sod_minor = 0;
 
@@ -93,7 +95,7 @@ _dl_build_sod(const char *name, struct sod *sodp)
 	major = minor = -1;
 
 	/* loop through name - parse skipping name */
-	for (tuplet = 0; (tok = strsep(&cp, ".")) != NULL; tuplet++) {
+	for (tuplet = 0; (tok = _dl_strsep(&cp, ".")) != NULL; tuplet++) {
 		switch (tuplet) {
 		case 0:
 			/* empty tok, we already skipped to "\.so.*" */
@@ -122,6 +124,8 @@ _dl_build_sod(const char *name, struct sod *sodp)
 		goto backout;
 	cp = (char *)sodp->sod_name;
 	sodp->sod_name = (long)_dl_strdup(realname);
+	if (sodp->sod_name == 0)
+		_dl_exit(7);
 	_dl_free(cp);
 	sodp->sod_library = 1;
 	sodp->sod_major = major;
@@ -131,6 +135,8 @@ _dl_build_sod(const char *name, struct sod *sodp)
 backout:
 	_dl_free((char *)sodp->sod_name);
 	sodp->sod_name = (long)_dl_strdup(name);
+	if (sodp->sod_name == 0)
+		_dl_exit(7);
 }
 
 void
@@ -159,7 +165,7 @@ _dl_maphints(void)
 	long		hsize = 0;
 	int		hfd;
 
-	if ((hfd = _dl_open(_PATH_LD_HINTS, O_RDONLY)) < 0)
+	if ((hfd = _dl_open(_PATH_LD_HINTS, O_RDONLY | O_CLOEXEC)) < 0)
 		goto bad_hints;
 
 	if (_dl_fstat(hfd, &sb) != 0 || !S_ISREG(sb.st_mode) ||

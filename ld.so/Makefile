@@ -1,4 +1,4 @@
-#	$OpenBSD: Makefile,v 1.47 2014/02/16 01:16:38 martynas Exp $
+#	$OpenBSD: Makefile,v 1.50 2014/06/21 08:00:22 otto Exp $
 
 SUBDIR=ldconfig ldd
 MAN=	ld.so.1
@@ -15,6 +15,8 @@ VPATH=${.CURDIR}/../../lib/libc/string
 SRCS=	ldasm.S boot.c loader.c resolve.c dlfcn.c dl_printf.c rtld_machine.c
 SRCS+=	path.c util.c sod.c strsep.c strtol.c dir.c library_subr.c dl_prebind.c
 SRCS+=	dl_realpath.c dl_uname.c dl_dirname.c strlcat.c strlen.c trace.c
+SRCS+=	malloc.c reallocarray.c
+
 .if (${MACHINE_ARCH} == "i386")
 SRCS+=	library_mquery.c
 .else
@@ -35,7 +37,9 @@ INSTALL_STRIP=
 ELF_LDFLAGS+=--shared -Bsymbolic --no-undefined
 
 test_prog=	test-$(PROG)
+CLEANFILES+=	test-$(PROG)
 candidate=	$(PROG).test
+CLEANFILES+=	${candidate}
 
 $(test_prog):
 	printf '#include <stdio.h>\nint main(int argc, char **argv){ printf("%%s\\n", argv[1]); }\n' | \

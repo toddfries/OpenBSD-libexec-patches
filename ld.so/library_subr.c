@@ -1,4 +1,4 @@
-/*	$OpenBSD: library_subr.c,v 1.39 2013/12/03 01:47:05 deraadt Exp $ */
+/*	$OpenBSD: library_subr.c,v 1.41 2014/07/10 09:03:01 otto Exp $ */
 
 /*
  * Copyright (c) 2002 Dale Rahn
@@ -34,7 +34,6 @@
 #include <sys/queue.h>
 #include <limits.h>
 #include <dirent.h>
-#include <string.h>
 
 #include "archdep.h"
 #include "resolve.h"
@@ -318,6 +317,8 @@ _dl_load_shlib(const char *libname, elf_object_t *parent, int type, int flags)
 		char *paths[2];
 		char *lpath, *lname;
 		lpath = _dl_strdup(libname);
+		if (lpath == NULL)
+			_dl_exit(5);
 		lname = _dl_strrchr(lpath, '/');
 		if (lname == NULL) {
 			_dl_free(lpath);
